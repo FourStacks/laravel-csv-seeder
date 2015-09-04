@@ -6,6 +6,7 @@ use DB;
 use Hash;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Schema;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Taken from http://laravelsnippets.com/snippets/seeding-database-with-csv-files-cleanly
@@ -20,6 +21,13 @@ class CsvSeeder extends Seeder
 	 * @var string
 	 */
 	public $table;
+	
+	/**
+	 * Model name
+	 *
+	 * @var Model
+	 */
+	public $model;
 
 	/**
 	 * CSV filename
@@ -238,10 +246,16 @@ class CsvSeeder extends Seeder
 	public function insert( array $seedData )
 	{
 		try {
-            DB::table($this->table)->insert($seedData);
+	            foreach($seedData as $data){
+	                $model = new $this->model;
+	                foreach($data as $key => $value){
+	                    $model->$key = $value;
+	                }
+	                $model->save();
+	            }
 		} catch (\Exception $e) {
-            Log::error("CSV insert failed: " . $e->getMessage() . " - CSV " . $this->filename);
-            return FALSE;
+            		Log::error("CSV insert failed: " . $e->getMessage() . " - CSV " . $this->filename);
+            		return FALSE;
 		}
 
         return TRUE;
