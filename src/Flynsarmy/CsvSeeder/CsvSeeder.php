@@ -6,7 +6,6 @@ use DB;
 use Hash;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Schema;
-use Illuminate\Database\Eloquent\Model;
 
 /**
  * Taken from http://laravelsnippets.com/snippets/seeding-database-with-csv-files-cleanly
@@ -25,7 +24,7 @@ class CsvSeeder extends Seeder
 	/**
 	 * Model name
 	 *
-	 * @var Model
+	 * @var string
 	 */
 	public $model;
 
@@ -247,7 +246,7 @@ class CsvSeeder extends Seeder
 	{
 		try {
 	            foreach($seedData as $data){
-	                $model = new $this->model;
+	                $model = \App::make($this->model);
 	                foreach($data as $key => $value){
 	                    $model->$key = $value;
 	                }
