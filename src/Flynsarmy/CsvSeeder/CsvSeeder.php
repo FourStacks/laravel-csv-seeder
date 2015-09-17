@@ -28,6 +28,9 @@ class CsvSeeder extends Seeder
 	 */
 	public $model;
 
+    public $modelAttributes;
+    public $metaAttributes;
+
 	/**
 	 * CSV filename
 	 *
@@ -169,12 +172,6 @@ class CsvSeeder extends Seeder
                 $mapping = $row;
                 $mapping[0] = $this->stripUtf8Bom($mapping[0]);
 
-                // skip csv columns that don't exist in the database
-                foreach($mapping  as $index => $fieldname){
-                    if (!DB::getSchemaBuilder()->hasColumn($this->table, $fieldname)){
-                       array_pull($mapping, $index);
-                    }
-                }
             }
             else
             {
@@ -247,8 +244,14 @@ class CsvSeeder extends Seeder
 		try {
 	            foreach($seedData as $data){
 	                $model = \App::make($this->model);
+
 	                foreach($data as $key => $value){
-	                    $model->$key = $value;
+
+                        if(in_array($key, $this->modelAttributes)){
+                            $model->$key = $value;
+                        } else {
+                            $model->setMeta($key, $value);
+                        }
 	                }
 	                $model->save();
 	            }
